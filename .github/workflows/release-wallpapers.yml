@@ -77,12 +77,6 @@ jobs:
 
           git push
 
-      - name: Create tag
-        run: |
-          # Tag as vX.Y.Z to match the URL pattern
-          git tag "v${VERSION}" || echo "Tag v${VERSION} already exists"
-          git push origin "v${VERSION}" || echo "Tag push failed (maybe already pushed)"
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
