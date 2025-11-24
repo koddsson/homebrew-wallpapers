@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  discussions: write
 
 jobs:
   release:
@@ -85,5 +86,3 @@ jobs:
           body: "Automated release of Workbrew wallpapers version ${{ env.VERSION }}."
           files: |
             ${{ env.ZIP_NAME }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
