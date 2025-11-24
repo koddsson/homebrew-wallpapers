@@ -1,6 +1,6 @@
 cask "wallpapers" do
-  version "0.0.2"
-  sha256 "746d9d8653fc326b91ca613d0be90c3a611e0721d51aa4ab105ab4069629767b"
+  version "0.0.3"
+  sha256 "5a28e371fa90495acd95864aad2f02fb475fba70df5cc7ff226d0cf2db3ebae1"
 
   url "https://github.com/koddsson/homebrew-wallpapers/releases/download/v#{version}/workbrew-wallpapers-#{version}.zip",
       verified: "github.com/koddsson/homebrew-wallpapers/"
