@@ -46,7 +46,7 @@ jobs:
 
       - name: Update cask file
         run: |
-          CASK_FILE="Casks/workbrew-wallpapers.rb"
+          CASK_FILE="Casks/wallpapers.rb"
 
           if [ ! -f "$CASK_FILE" ]; then
             echo "Cask file $CASK_FILE not found!"
@@ -71,7 +71,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add Casks/workbrew-wallpapers.rb "$ZIP_NAME"
+          git add Casks/wallpapers.rb "$ZIP_NAME"
 
           git commit -m "Release workbrew-wallpapers ${VERSION}" || echo "No changes to commit"
 
