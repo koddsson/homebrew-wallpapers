@@ -67,12 +67,12 @@ jobs:
 
           echo "Updated $CASK_FILE with version=${VERSION} and sha256=${SHA256}"
 
-      - name: Commit cask update and zip
+      - name: Commit cask update
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add Casks/wallpapers.rb "$ZIP_NAME"
+          git add Casks/wallpapers.rb
 
           git commit -m "Release workbrew-wallpapers ${VERSION}" || echo "No changes to commit"
 
