@@ -1,0 +1,88 @@
+name: Release Workbrew Wallpapers
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (e.g. 1.0.1)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  discussions: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up variables
+        id: vars
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          ZIP_NAME="workbrew-wallpapers-${VERSION}.zip"
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
+
+      - name: Create ZIP from Wallpapers directory
+        run: |
+          if [ ! -d "Wallpapers" ]; then
+            echo "Wallpapers directory not found!"
+            exit 1
+          fi
+
+          # Ensure deterministic zip (optional but nice)
+          zip -r "$ZIP_NAME" Wallpapers
+
+      - name: Calculate sha256
+        id: sha
+        run: |
+          SHA256=$(sha256sum "$ZIP_NAME" | awk '{print $1}')
+          echo "SHA256=${SHA256}" >> $GITHUB_ENV
+          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
+
+      - name: Update cask file
+        run: |
+          CASK_FILE="Casks/wallpapers.rb"
+
+          if [ ! -f "$CASK_FILE" ]; then
+            echo "Cask file $CASK_FILE not found!"
+            exit 1
+          fi
+
+          # Update version line
+          #   version "1.0.0" -> version "NEW"
+          sed -i.bak -E "s/^(\s*version\s+\")[^\"]+\"/\1${VERSION}\"/" "$CASK_FILE"
+
+          # Update sha256 line
+          #   sha256 "..." -> sha256 "NEW_SHA"
+          sed -i.bak -E "s/^(\s*sha256\s+\")[^\"]+\"/\1${SHA256}\"/" "$CASK_FILE"
+
+          # Clean up backup
+          rm "${CASK_FILE}.bak"
+
+          echo "Updated $CASK_FILE with version=${VERSION} and sha256=${SHA256}"
+
+      - name: Commit cask update and zip
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add Casks/wallpapers.rb "$ZIP_NAME"
+
+          git commit -m "Release workbrew-wallpapers ${VERSION}" || echo "No changes to commit"
+
+          git push
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ env.VERSION }}"
+          name: "Workbrew Wallpapers ${{ env.VERSION }}"
+          body: "Automated release of Workbrew wallpapers version ${{ env.VERSION }}."
+          files: |
+            ${{ env.ZIP_NAME }}
